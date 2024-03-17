@@ -22,3 +22,15 @@ export const supplyTypeList = [
 	"drainTank",
 	"dustBin",
 ];
+
+export const supplyTypeDetailList = {
+	washerDetergent: ["amount"],
+	fabricSoftener: ["amount"],
+	dishDetergent: ["amount"],
+	dishRinse: ["amount"],
+	cleanableFilter: ["status", "date"],
+	replaceableFilter: ["status", "date"],
+	supplyTank: ["level", "date"],
+	drainTank: ["level", "date"],
+	dustBin: ["level", "date"],
+};

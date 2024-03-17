@@ -9,18 +9,18 @@
 import { useRef, useState, ChangeEvent } from "react";
 import { deviceTypeList } from "../store/dataStore";
 
-interface IDeviceListProps {
+interface OwnProps {
 	manufacturerList: string[];
 }
 
-interface IDeviceListData {
+interface DeviceListData {
 	[deviceName: string]: string[];
 }
 
-export default function DeviceList({ manufacturerList }: IDeviceListProps) {
+const DeviceList: React.FC<OwnProps> = ({ manufacturerList }) => {
 	const [selectedManufacturer, setSelectedManufacturer] = useState<string>("");
 	const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
-	const [deviceList, setDeviceList] = useState<IDeviceListData[]>([]);
+	const [deviceList, setDeviceList] = useState<DeviceListData[]>([]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -63,10 +63,10 @@ export default function DeviceList({ manufacturerList }: IDeviceListProps) {
 		}
 	};
 	return (
-		<>
+		<div id="device-list" className="w-full">
 			<form
 				onSubmit={handleSubmit}
-				className="w-2/3 px-10 py-5 rounded-lg flex justify-between"
+				className="w-2/3 mx-auto px-10 py-5 rounded-lg flex justify-between"
 			>
 				{/* 제조사 선택하는 드롭다운 */}
 				<select
@@ -114,7 +114,7 @@ export default function DeviceList({ manufacturerList }: IDeviceListProps) {
 
 			{/* 조회된 기기 목록 */}
 			{deviceList.length > 0 ? (
-				<div className="w-2/3">
+				<div className="w-2/3 mx-auto">
 					<div id="header" className="flex space-x-3 m-2">
 						<p className="my-auto text-bold text-lg">
 							{selectedManufacturer} - {selectedDeviceType}
@@ -159,11 +159,12 @@ export default function DeviceList({ manufacturerList }: IDeviceListProps) {
 							</>
 						);
 					})}
-					{/* list */}
 				</div>
 			) : (
 				<div></div>
 			)}
-		</>
+		</div>
 	);
-}
+};
+
+export default DeviceList;

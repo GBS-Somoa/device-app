@@ -15,7 +15,7 @@ export default function DeviceList() {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="bg-white w-2/3 px-10 py-5 rounded-lg flex justify-between"
+			className="bg-white w-2/3 h-20 px-10 py-5 rounded-lg flex justify-between"
 		>
 			<input
 				type="text"
