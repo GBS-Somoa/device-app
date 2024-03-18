@@ -1,3 +1,5 @@
+//  이거 다 서버가 줌, 저장해놓을 필요 없음
+
 export const deviceTypeList = [
 	"refrigerator",
 	"washer",

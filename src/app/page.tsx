@@ -4,8 +4,11 @@ import DeviceModelCreateForm from "./components/DeviceModelCreateForm";
 
 const Home: React.FC = () => {
 	// 렌더링 시점에 제조사 목록 조회 요청 보내기
+	// 소모품 목록 조회 요청 보내기
+	// 기기 종류 조회 요청 보내기
 	const deviceType: string[] = [""];
 	const manufacturerList: string[] = ["Samsung", "LG", "Apple"]; // 예시 데이터
+  const 
 
 	return (
 		<>
@@ -15,7 +18,7 @@ const Home: React.FC = () => {
 				{/* 기기 목록 */}
 				<DeviceList manufacturerList={manufacturerList} />
 			</main>
-			<DeviceModelCreateForm manufacturer="Samsung" deviceType="washer" />
+			{/* <DeviceModelCreateForm manufacturer="Samsung" deviceType="washer" /> */}
 		</>
 	);
 };
