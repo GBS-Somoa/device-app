@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, ChangeEvent } from "react";
-import { supplyTypeList } from "../store/dataStore";
+import useSupplyStore from "../store/supplyState";
 
 interface OwnProps {
 	supplyId: number;
@@ -18,6 +18,7 @@ const SupplyAddForm: React.FC<OwnProps> = ({
 	changeName,
 	deleteSupply,
 }) => {
+	const supplyTypeList = useSupplyStore((state) => state.supplyTypeList);
 	const [selectedSupplyType, setSelectedSupplyType] = useState<string>("");
 	const supplyName = useRef<HTMLInputElement>(null);
 	const handleNameChange = (id: number, value: string) => {

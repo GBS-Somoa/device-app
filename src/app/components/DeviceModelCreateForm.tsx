@@ -1,13 +1,8 @@
 "use client";
 
 import { useRef, useState, ChangeEvent } from "react";
-import { supplyTypeList } from "../store/dataStore";
 import SupplyAddForm from "./SupplyAddForm";
-
-interface OwnProps {
-	manufacturer: string;
-	deviceType: string;
-}
+import useModalStore from "../store/modalState";
 
 interface Supply {
 	id: number;
@@ -15,10 +10,15 @@ interface Supply {
 	name: string;
 }
 
-const DeviceModelCreateForm: React.FC<OwnProps> = ({
-	manufacturer,
-	deviceType,
-}) => {
+const DeviceModelCreateForm: React.FC = () => {
+	const setDeviceModelCreateModalClose = useModalStore(
+		(state) => state.setDeviceModelCreateModalClose
+	);
+	const setConfirmModalOpen = useModalStore(
+		(state) => state.setConfirmModalOpen
+	);
+	const manufacturer = useModalStore((state) => state.selectedManufacturer);
+	const deviceType = useModalStore((state) => state.selectedDeviceType);
 	const modelName = useRef<HTMLInputElement>(null);
 	const [supplyList, setSupplyList] = useState<Supply[]>([
 		{ id: 0, type: "", name: "" },
@@ -77,11 +77,21 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 				modelName: modelName.current.value,
 				supplyList: supplyList,
 			});
+
+			setConfirmModalOpen(`${modelName.current.value} 모델이 생성되었습니다`);
 		}
 	};
 
 	return (
-		<div id="outer-layer">
+		<div
+			id="outer-layer"
+			onClick={(e) => {
+				console.log(e.target);
+				if (e.target.id && e.target.id == "outer-layer") {
+					setDeviceModelCreateModalClose();
+				}
+			}}
+		>
 			<div
 				id="inner-layer"
 				className="relative bg-primary max-w-[650px] w-1/2 min-h-[400px] mx-auto p-10 rounded-lg"

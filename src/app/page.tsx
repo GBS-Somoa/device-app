@@ -1,14 +1,40 @@
 import ManufacturerCreateForm from "./components/ManufacturerCreateForm";
 import DeviceList from "./components/DeviceList";
-import DeviceModelCreateForm from "./components/DeviceModelCreateForm";
+import Modal from "./components/Modal";
+
+import useModalStore from "./store/modalState";
 
 const Home: React.FC = () => {
-	// 렌더링 시점에 제조사 목록 조회 요청 보내기
+	// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
 	// 소모품 목록 조회 요청 보내기
 	// 기기 종류 조회 요청 보내기
-	const deviceType: string[] = [""];
-	const manufacturerList: string[] = ["Samsung", "LG", "Apple"]; // 예시 데이터
-  const 
+	// -> props로 자식 컴포넌트에 넘겨줌
+
+	// ---------예시 데이터-------
+	const manufacturerList: string[] = ["Samsung", "LG", "Apple"];
+	const deviceTypeList: string[] = [
+		"refrigerator",
+		"washer",
+		"humidifier",
+		"dehumidifier",
+		"airPurifier",
+		"steamCloset",
+		"dishwasher",
+		"vacuumCleaner",
+		"waterPurifier",
+		"airConditioner",
+	];
+	const supplyTypeList: string[] = [
+		"washerDetergent",
+		"fabricSoftener",
+		"dishDetergent",
+		"dishRinse",
+		"cleanableFilter",
+		"replaceableFilter",
+		"supplyTank",
+		"drainTank",
+		"dustBin",
+	];
 
 	return (
 		<>
@@ -16,9 +42,12 @@ const Home: React.FC = () => {
 				{/* 제조사 생성 폼 */}
 				<ManufacturerCreateForm />
 				{/* 기기 목록 */}
-				<DeviceList manufacturerList={manufacturerList} />
+				<DeviceList
+					manufacturerList={manufacturerList}
+					deviceTypeList={deviceTypeList}
+				/>
 			</main>
-			{/* <DeviceModelCreateForm manufacturer="Samsung" deviceType="washer" /> */}
+			<Modal supplyTypeList={supplyTypeList} />
 		</>
 	);
 };
