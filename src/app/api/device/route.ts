@@ -21,10 +21,45 @@ export async function GET(request: NextRequest) {
   mongoose.model("DeviceModel", DeviceModel.schema);
 
   try {
-    const deviceInstances = await DeviceInstance.find().populate(
-      "deviceModelId"
-    );
-    return NextResponse.json(deviceInstances, { status: 200 });
+    const manufacturer = request.nextUrl.searchParams.get("manufacturer");
+    const deviceType = request.nextUrl.searchParams.get("device_type");
+    const deviceId = request.nextUrl.searchParams.get("device_id");
+
+    if (manufacturer && deviceType) {
+      const deviceModels = await DeviceModel.find({
+        deviceManufacturer: manufacturer,
+        deviceType: deviceType,
+      });
+
+      const result: any = {};
+
+      for (const model of deviceModels) {
+        const deviceInstances = await DeviceInstance.find({
+          deviceModelId: model._id,
+        });
+
+        const deviceIds = deviceInstances.map((instance) => instance.deviceId);
+
+        result[model.deviceModel] = { deviceIds };
+      }
+      return NextResponse.json(
+        { message: "기기 목록 조회에 성공했습니다.", data: result },
+        { status: 200 }
+      );
+    } else if (deviceId) {
+      const deviceInstance = await DeviceInstance.findOne({
+        deviceId: deviceId,
+      }).populate("deviceModelId");
+      return NextResponse.json(
+        { message: "기기 단일 조회에 성공했습니다.", data: deviceInstance },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Invalid query parameters" },
+        { status: 400 }
+      );
+    }
   } catch (error) {
     console.error("Failed to fetch device instances", error);
     return NextResponse.json(
@@ -51,7 +86,10 @@ export async function POST(request: NextRequest) {
     });
 
     await deviceInstance.save();
-    return NextResponse.json(deviceInstance, { status: 201 });
+    return NextResponse.json(
+      { message: "기기가 생성되었습니다.", data: deviceInstance },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Failed to create device instance", error);
     return NextResponse.json(

@@ -63,24 +63,31 @@ export async function DELETE(request: NextRequest) {
   await dbConnect();
 
   try {
-    const deviceModel = request.nextUrl.searchParams.get("deviceModel");
+    const deviceModel = request.nextUrl.searchParams.get("model");
 
     const deviceModelId = await DeviceModel.findOne({
       deviceModel: deviceModel,
     });
 
-    console.log(deviceModelId);
-
-    // 해당 DeviceModel을 참조하는 DeviceInstance 삭제
+    // DeviceModel을 참조하는 DeviceInstance 삭제
     await DeviceInstance.deleteMany({ deviceModelId: deviceModelId._id });
 
-    // DeviceModel 문서 삭제
-    await DeviceModel.deleteOne({ deviceModel: deviceModel });
+    // DeviceModel 삭제
+    const deletionResult = await DeviceModel.deleteOne({
+      deviceModel: deviceModel,
+    });
 
-    return NextResponse.json(
-      { message: "Device model deleted successfully!" },
-      { status: 200 }
-    );
+    if (deletionResult.deletedCount > 0) {
+      return NextResponse.json(
+        { message: "기기 모델이 삭제되었습니다." },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { message: "Device model not found" },
+        { status: 404 }
+      );
+    }
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to delete device model" },

@@ -87,7 +87,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const name = request.nextUrl.searchParams.get("manufacturer");
 
-    // DeviceModel 문서 삭제 전 해당 Manufacturer를 참조하는 DeviceModel 찾기
+    // Manufacturer를 참조하는 DeviceModel 찾기
     const deviceModels = await DeviceModel.find({ deviceManufacturer: name });
 
     // 각 DeviceModel에 대해 해당 모델을 참조하는 DeviceInstance 삭제
@@ -95,14 +95,15 @@ export async function DELETE(request: NextRequest) {
       await DeviceInstance.deleteMany({ deviceModelId: model._id });
     }
 
-    // DeviceModel 문서 삭제
+    // DeviceModel 삭제
     await DeviceModel.deleteMany({ deviceManufacturer: name });
 
+    // Manufacturer 삭제
     const deletionResult = await Manufacturer.deleteOne({ name: name });
 
     if (deletionResult.deletedCount > 0) {
       return NextResponse.json(
-        { message: "제조사 삭제 완료" },
+        { message: "제조사가 삭제되었습니다." },
         { status: 200 }
       );
     } else {
