@@ -1,15 +1,22 @@
-import * as ManufacturerAPI from "../../src/app/api/manufacturer/route";
+import * as ManufacturerAPI from "@/app/api/manufacturer/route";
 import { NextRequest } from "next/server";
 import mongoose from "mongoose";
+import dbConnect from "@/lib/mongodb";
 
 describe("Manufacturer API 테스트", () => {
+  beforeAll(async () => {
+    await dbConnect();
+  });
+
   afterAll(async () => {
-    mongoose.disconnect();
+    await mongoose.disconnect();
   });
 
   describe("GET /api/manufacturer", () => {
-    it("should return status code 200", async () => {
-      const mockRequest = new NextRequest("http://localhost/api/manufacturer");
+    it("제조사 조회 테스트", async () => {
+      const mockRequest = new NextRequest(
+        "http://localhost:3000/api/manufacturer"
+      );
 
       const response = await ManufacturerAPI.GET(mockRequest);
       expect(response.status).toBe(200);
@@ -27,14 +34,17 @@ describe("Manufacturer API 테스트", () => {
   });
 
   describe("POST /api/manufacturer", () => {
-    it("should return status code 201", async () => {
+    it("제조사 생성 테스트", async () => {
       const requestBody = {
         name: "test1",
       };
-      const mockRequest = new NextRequest("http://localhost/api/manufacturer", {
-        method: "POST",
-        body: JSON.stringify(requestBody),
-      });
+      const mockRequest = new NextRequest(
+        "http://localhost:3000/api/manufacturer",
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const response = await ManufacturerAPI.POST(mockRequest);
       expect(response.status).toBe(201);
@@ -48,10 +58,10 @@ describe("Manufacturer API 테스트", () => {
   });
 
   describe("DELETE /api/manufacturer", () => {
-    it("should return status code 200", async () => {
+    it("제조사 삭제 테스트", async () => {
       const manufacturerName = "test1";
       const mockRequest = new NextRequest(
-        `http://localhost/api/manufacturer?manufacturer=${encodeURIComponent(
+        `http://localhost:3000/api/manufacturer?manufacturer=${encodeURIComponent(
           manufacturerName
         )}`,
         {
