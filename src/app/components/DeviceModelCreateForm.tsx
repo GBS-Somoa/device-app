@@ -1,13 +1,8 @@
 "use client";
 
 import { useRef, useState, ChangeEvent } from "react";
-import { supplyTypeList } from "../store/dataStore";
 import SupplyAddForm from "./SupplyAddForm";
-
-interface OwnProps {
-	manufacturer: string;
-	deviceType: string;
-}
+import useModalStore from "../store/modalState";
 
 interface Supply {
 	id: number;
@@ -15,15 +10,21 @@ interface Supply {
 	name: string;
 }
 
-const DeviceModelCreateForm: React.FC<OwnProps> = ({
-	manufacturer,
-	deviceType,
-}) => {
+const DeviceModelCreateForm: React.FC = () => {
+	const setDeviceModelCreateModalClose = useModalStore(
+		(state) => state.setDeviceModelCreateModalClose
+	);
+	const setConfirmModalOpen = useModalStore(
+		(state) => state.setConfirmModalOpen
+	);
+	const manufacturer = useModalStore((state) => state.selectedManufacturer);
+	const deviceType = useModalStore((state) => state.selectedDeviceType);
 	const modelName = useRef<HTMLInputElement>(null);
 	const [supplyList, setSupplyList] = useState<Supply[]>([
 		{ id: 0, type: "", name: "" },
 	]);
 
+	// 소모품 추가
 	const handleAddSupply = () => {
 		setSupplyList((prev) => {
 			const lastId: number = prev[prev.length - 1].id;
@@ -32,6 +33,7 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 		});
 	};
 
+	// 소모품 삭제
 	const deleteSupply = () => {
 		setSupplyList((prev) => {
 			console.log(prev.slice(0, -1));
@@ -39,6 +41,7 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 		});
 	};
 
+	// 소모품 종류가 변경되면, supplyList 값 변경
 	const changeType = (id: number, changedType: string) => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
@@ -50,6 +53,7 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 		});
 	};
 
+	// 소모품 이름이 변경되면, supplyList 값 변경
 	const changeName = (id: number, changedName: string) => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
@@ -61,6 +65,7 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 		});
 	};
 
+	// 기기 모델 생성 요청
 	const createDeviceModel = () => {
 		// TODO
 		// 기기 모델명 있는지 확인, 소모품 1개 이상 필수
@@ -70,18 +75,30 @@ const DeviceModelCreateForm: React.FC<OwnProps> = ({
 		const filteredSupplyList = supplyList.filter(
 			(item) => item.type != "" && item.name != ""
 		);
-		if (modelName.current && filteredSupplyList.length > 0) {
+		if (modelName.current?.value != "" && filteredSupplyList.length > 0) {
 			console.log({
 				manufacturer: manufacturer,
 				deviceType: deviceType,
-				modelName: modelName.current.value,
-				supplyList: supplyList,
+				modelName: modelName.current?.value,
+				supplyList: filteredSupplyList,
 			});
+
+			setConfirmModalOpen(`${modelName.current?.value} 모델이 생성되었습니다`);
+		} else {
+			window.alert("비어있는 값이 있어 모델을 생성할 수 없습니다.");
 		}
 	};
 
 	return (
-		<div id="outer-layer">
+		<div
+			id="outer-layer"
+			onClick={(e) => {
+				console.log(e.target);
+				if (e.target.id && e.target.id == "outer-layer") {
+					setDeviceModelCreateModalClose();
+				}
+			}}
+		>
 			<div
 				id="inner-layer"
 				className="relative bg-primary max-w-[650px] w-1/2 min-h-[400px] mx-auto p-10 rounded-lg"
