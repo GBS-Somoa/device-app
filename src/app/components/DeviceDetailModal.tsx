@@ -10,6 +10,7 @@ interface supply {
 }
 
 const DeviceDetailModal: React.FC = () => {
+	const supplyData = useRef<HTMLInputElement>(null);
 	// TODO: deviceId로 서버에 단일 조회 요청
 	const deviceId = useModalStore((state) => state.deviceId);
 	// ---------임시데이터---------
@@ -52,16 +53,75 @@ const DeviceDetailModal: React.FC = () => {
 		(state) => state.setDeviceDetailModalClose
 	);
 
+	const supplyValueInputField = (contentItem: string, supplyType: string) => {
+		switch (contentItem) {
+			case "supplyAmount":
+				return (
+					<>
+						<input type="text" className="form-item px-2 py-1 w-1/2" />
+						<p>ml</p>
+					</>
+				);
+			case "supplyLevel":
+				return (
+					<>
+						<input type="text" className="form-item px-2 py-1 w-1/2" /> %
+					</>
+				);
+			case "supplyChangedDate":
+				return (
+					<>
+						<input
+							type="text"
+							placeholder="YYYY.MM.DD"
+							className="form-item px-2 py-1 w-32"
+						/>
+					</>
+				);
+			case "supplyStatus":
+				return (
+					<>
+						{["replaceableFilter", "cleanableFilter"].includes(supplyType) && (
+							<select id="status" className="form-item px-2 py-1 w-full">
+								<option value="good">좋음</option>
+								<option value="normal">보통</option>
+								<option value="bad">나쁨</option>
+								<option value="null">상태없음</option>
+							</select>
+						)}
+						{supplyType === "dustBin" && (
+							<select id="status" className="form-item px-2 py-1 w-full">
+								{[...Array(10)].map((_, index) => (
+									<option key={index} value={index + 1}>
+										{index + 1}
+									</option>
+								))}
+							</select>
+						)}
+					</>
+				);
+			default:
+				return null;
+		}
+	};
+
 	const handleClick = () => {
 		// TODO: 소모품 데이터를 담고 구조화하여 서비스앱 서버로 보내줘야함
+		const suppliesElement = supplyData.current;
+
+		if (suppliesElement) {
+			// supplies 요소의 자식 요소들을 순회
+			const supplyItems = suppliesElement.querySelectorAll("#supply-name");
+			console.log(supplyItems);
+		}
+
 		console.log("동작");
-		setDeviceDetailModalClose();
+		// setDeviceDetailModalClose();
 	};
 	return (
 		<div
 			id="outer-layer"
 			onClick={(e) => {
-				console.log(e.target);
 				if (e.target.id && e.target.id == "outer-layer") {
 					setDeviceDetailModalClose();
 				}
@@ -85,82 +145,28 @@ const DeviceDetailModal: React.FC = () => {
 				<div
 					id="supplies"
 					className="my-5 min-h-[100px] bg-white rounded-lg p-3"
+					ref={supplyData}
 				>
 					{supplyList.map((item, index) => (
 						<>
-							<div key={index} className="flex justify-between my-2">
-								<p className="w-1/6">{item.name}</p>
+							<div
+								key={index}
+								className="flex justify-between my-2"
+								id="supply"
+							>
+								<p className="w-1/6" id="supply-name">
+									{item.name}
+								</p>
 								{/* TODO:: 소모품 종류에 따라 데이터 입력칸 다르게 생성 => store/dataStore/supplyTypeDetailList 참고 */}
 								<div className="w-2/3">
 									{item.content.map((contentItem, contentIndex) => (
 										<div
 											className="flex space-x-3 my-2 items-center"
 											key={contentIndex}
+											id="supply-item"
 										>
 											<p>{contentItem}</p>
-											{contentItem === "supplyAmount" && (
-												<>
-													<input
-														type="text"
-														className="form-item px-2 py-1 w-1/2"
-													/>
-													<p>ml</p>
-												</>
-											)}
-											{contentItem === "supplyLevel" && (
-												<div>
-													<input
-														type="text"
-														className="form-item px-2 py-1 w-1/2"
-													/>{" "}
-													%
-												</div>
-											)}
-											{contentItem === "supplyChangedDate" && (
-												<div>
-													<input
-														type="text"
-														placeholder="YYYY.MM.DD"
-														className="form-item px-2 py-1 w-32"
-													/>{" "}
-												</div>
-											)}
-											{contentItem === "supplyStatus" &&
-												["replaceableFilter", "cleanableFilter"].includes(
-													item.type
-												) && (
-													<div>
-														<select
-															id="status"
-															className="form-item px-2 py-1 w-full"
-														>
-															<option value="good">좋음</option>
-															<option value="normal">보통</option>
-															<option value="bad">나쁨</option>
-															<option value="null">상태없음</option>
-														</select>
-													</div>
-												)}
-											{contentItem === "supplyStatus" &&
-												item.type === "dustBin" && (
-													<div>
-														<select
-															id="status"
-															className="form-item px-2 py-1 w-full"
-														>
-															<option value="1">1</option>
-															<option value="2">2</option>
-															<option value="3">3</option>
-															<option value="4">4</option>
-															<option value="5">5</option>
-															<option value="6">6</option>
-															<option value="7">7</option>
-															<option value="8">8</option>
-															<option value="9">9</option>
-															<option value="10">10</option>
-														</select>
-													</div>
-												)}
+											{supplyValueInputField(contentItem, item.type)}
 										</div>
 									))}
 								</div>

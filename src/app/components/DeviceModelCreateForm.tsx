@@ -24,6 +24,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		{ id: 0, type: "", name: "" },
 	]);
 
+	// 소모품 추가
 	const handleAddSupply = () => {
 		setSupplyList((prev) => {
 			const lastId: number = prev[prev.length - 1].id;
@@ -32,6 +33,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		});
 	};
 
+	// 소모품 삭제
 	const deleteSupply = () => {
 		setSupplyList((prev) => {
 			console.log(prev.slice(0, -1));
@@ -39,6 +41,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		});
 	};
 
+	// 소모품 종류가 변경되면, supplyList 값 변경
 	const changeType = (id: number, changedType: string) => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
@@ -50,6 +53,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		});
 	};
 
+	// 소모품 이름이 변경되면, supplyList 값 변경
 	const changeName = (id: number, changedName: string) => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
@@ -61,6 +65,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		});
 	};
 
+	// 기기 모델 생성 요청
 	const createDeviceModel = () => {
 		// TODO
 		// 기기 모델명 있는지 확인, 소모품 1개 이상 필수
