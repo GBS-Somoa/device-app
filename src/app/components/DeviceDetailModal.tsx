@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useModalStore from "../store/modalState";
 
 interface supply {
@@ -11,6 +11,7 @@ interface supply {
 
 const DeviceDetailModal: React.FC = () => {
 	const supplyData = useRef<HTMLInputElement>(null);
+	const [supplyValues, setSupplyValues] = useState<string[]>([]);
 	// TODO: deviceId로 서버에 단일 조회 요청
 	const deviceId = useModalStore((state) => state.deviceId);
 	// ---------임시데이터---------
@@ -49,32 +50,69 @@ const DeviceDetailModal: React.FC = () => {
 		values: new Array(item.content.length).fill(undefined),
 	}));
 
+	const handleInputChange = (
+		index: number,
+		contentIndex: number,
+		value: string | number
+	) => {
+		supplyListWithValues[index].values[contentIndex] = value;
+	};
+
 	const setDeviceDetailModalClose = useModalStore(
 		(state) => state.setDeviceDetailModalClose
 	);
 
-	const supplyValueInputField = (contentItem: string, supplyType: string) => {
+	const supplyValueInputField = (
+		index: number,
+		contentIndex: number,
+		supplyType: string,
+		contentItem: string
+	) => {
 		switch (contentItem) {
 			case "supplyAmount":
 				return (
 					<>
-						<input type="text" className="form-item px-2 py-1 w-1/2" />
+						<input
+							type="number"
+							className="form-item px-2 py-1 w-1/2"
+							value={supplyListWithValues[index].values[contentIndex]}
+							onChange={(event) =>
+								handleInputChange(index, contentIndex, event.target.value)
+							}
+						/>
 						<p>ml</p>
 					</>
 				);
 			case "supplyLevel":
 				return (
 					<>
-						<input type="text" className="form-item px-2 py-1 w-1/2" /> %
+						<select
+							className="form-item px-2 py-1 w-1/2"
+							value={supplyListWithValues[index].values[contentIndex]}
+							onChange={(event) =>
+								handleInputChange(index, contentIndex, event.target.value)
+							}
+						>
+							<option style={{ display: "none" }} selected value=""></option>
+							{[...Array(101)].map((_, index) => (
+								<option key={index} value={index}>
+									{index}
+								</option>
+							))}
+						</select>
+						<p>%</p>
 					</>
 				);
 			case "supplyChangedDate":
 				return (
 					<>
 						<input
-							type="text"
-							placeholder="YYYY.MM.DD"
-							className="form-item px-2 py-1 w-32"
+							type="date"
+							className="form-item px-2 py-1 w-36"
+							value={supplyListWithValues[index].values[contentIndex]}
+							onChange={(event) =>
+								handleInputChange(index, contentIndex, event.target.value)
+							}
 						/>
 					</>
 				);
@@ -82,7 +120,15 @@ const DeviceDetailModal: React.FC = () => {
 				return (
 					<>
 						{["replaceableFilter", "cleanableFilter"].includes(supplyType) && (
-							<select id="status" className="form-item px-2 py-1 w-full">
+							<select
+								id="status"
+								className="form-item px-2 py-1 w-1/2"
+								value={supplyListWithValues[index].values[contentIndex]}
+								onChange={(event) =>
+									handleInputChange(index, contentIndex, event.target.value)
+								}
+							>
+								<option style={{ display: "none" }} selected value=""></option>
 								<option value="good">좋음</option>
 								<option value="normal">보통</option>
 								<option value="bad">나쁨</option>
@@ -90,7 +136,15 @@ const DeviceDetailModal: React.FC = () => {
 							</select>
 						)}
 						{supplyType === "dustBin" && (
-							<select id="status" className="form-item px-2 py-1 w-full">
+							<select
+								id="status"
+								className="form-item px-2 py-1 w-1/2"
+								value={supplyListWithValues[index].values[contentIndex]}
+								onChange={(event) =>
+									handleInputChange(index, contentIndex, event.target.value)
+								}
+							>
+								<option style={{ display: "none" }} selected value=""></option>
 								{[...Array(10)].map((_, index) => (
 									<option key={index} value={index + 1}>
 										{index + 1}
@@ -107,15 +161,9 @@ const DeviceDetailModal: React.FC = () => {
 
 	const handleClick = () => {
 		// TODO: 소모품 데이터를 담고 구조화하여 서비스앱 서버로 보내줘야함
-		const suppliesElement = supplyData.current;
-
-		if (suppliesElement) {
-			// supplies 요소의 자식 요소들을 순회
-			const supplyItems = suppliesElement.querySelectorAll("#supply-name");
-			console.log(supplyItems);
-		}
 
 		console.log("동작");
+		console.log(supplyListWithValues);
 		// setDeviceDetailModalClose();
 	};
 	return (
@@ -149,24 +197,22 @@ const DeviceDetailModal: React.FC = () => {
 				>
 					{supplyList.map((item, index) => (
 						<>
-							<div
-								key={index}
-								className="flex justify-between my-2"
-								id="supply"
-							>
-								<p className="w-1/6" id="supply-name">
-									{item.name}
-								</p>
-								{/* TODO:: 소모품 종류에 따라 데이터 입력칸 다르게 생성 => store/dataStore/supplyTypeDetailList 참고 */}
+							<div key={index} className="flex justify-between my-2">
+								<p className="w-1/6">{item.name}</p>
+								{/* 소모품 종류에 따라 데이터 입력칸 다르게 생성됨 */}
 								<div className="w-2/3">
 									{item.content.map((contentItem, contentIndex) => (
 										<div
 											className="flex space-x-3 my-2 items-center"
 											key={contentIndex}
-											id="supply-item"
 										>
 											<p>{contentItem}</p>
-											{supplyValueInputField(contentItem, item.type)}
+											{supplyValueInputField(
+												index,
+												contentIndex,
+												item.type,
+												contentItem
+											)}
 										</div>
 									))}
 								</div>
