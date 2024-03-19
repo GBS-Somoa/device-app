@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
-import crypto from "crypto";
+import { generateDeviceId } from "@/lib/generateDeviceId";
 
 interface IDeviceInstance extends mongoose.Document {
   deviceModelId: mongoose.Types.ObjectId;
   deviceId: string;
 }
-
-const generateDeviceId = () => crypto.randomBytes(16).toString("hex");
 
 const deviceInstanceSchema = new mongoose.Schema(
   {
