@@ -2,6 +2,11 @@ import ManufacturerCreateForm from "./components/ManufacturerCreateForm";
 import DeviceList from "./components/DeviceList";
 import Modal from "./components/Modal";
 
+interface supplyType {
+	type: string;
+	dataProvided: string[];
+}
+
 const Home: React.FC = async () => {
 	// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
 	// 소모품 목록 조회 요청 보내기
@@ -11,30 +16,68 @@ const Home: React.FC = async () => {
 	// const response = await fetch("/api/manufacturer");
 
 	// ---------예시 데이터-------
-	const manufacturerList: string[] = ["Samsung", "LG", "Apple"];
-	const deviceTypeList: string[] = [
-		"refrigerator",
-		"washer",
-		"humidifier",
-		"dehumidifier",
-		"airPurifier",
-		"steamCloset",
-		"dishwasher",
-		"vacuumCleaner",
-		"waterPurifier",
-		"airConditioner",
-	];
-	const supplyTypeList: string[] = [
-		"washerDetergent",
-		"fabricSoftener",
-		"dishDetergent",
-		"dishRinse",
-		"cleanableFilter",
-		"replaceableFilter",
-		"supplyTank",
-		"drainTank",
-		"dustBin",
-	];
+	const data = {
+		manufacturers: [
+			{
+				name: "Samsung",
+			},
+			{
+				name: "LG",
+			},
+			{
+				name: "Apple",
+			},
+		],
+		deviceTypes: [
+			{
+				type: "refrigerator",
+			},
+			{
+				type: "washer",
+			},
+			{
+				type: "humidifier",
+			},
+			{
+				type: "dehumidifier",
+			},
+			{
+				type: "airPurifier",
+			},
+			{
+				type: "humidifier",
+			},
+			{
+				type: "steamCloset",
+			},
+			{
+				type: "dishwasher",
+			},
+		],
+		supplyTypes: [
+			{
+				type: "washerDetergent",
+				dataProvided: ["supplyAmount"],
+			},
+			{
+				type: "fabricSoftener",
+				dataProvided: ["supplyAmount"],
+			},
+			{
+				type: "supplyTank",
+				dataProvided: ["supplyLevel", "supplyChangedDate"],
+			},
+			{
+				type: "cleanableFilter",
+				dataProvided: ["supplyStatus", "supplyChangedDate"],
+			},
+		],
+	};
+	const manufacturerList: string[] = data.manufacturers.map(
+		(item) => item.name
+	);
+	const deviceTypeList: string[] = data.deviceTypes.map((item) => item.type);
+	const supplyTypeList: supplyType[] = data.supplyTypes;
 
 	return (
 		<>

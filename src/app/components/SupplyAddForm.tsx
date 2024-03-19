@@ -43,8 +43,8 @@ const SupplyAddForm: React.FC<OwnProps> = ({
 					소모품 선택
 				</option>
 				{supplyTypeList.map((item, index) => (
-					<option key={index} value={item}>
-						{item}
+					<option key={index} value={item.type}>
+						{item.type}
 					</option>
 				))}
 			</select>

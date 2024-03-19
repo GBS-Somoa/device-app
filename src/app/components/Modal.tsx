@@ -8,9 +8,14 @@ import WarningModal from "../components/WarningModal";
 import useModalStore from "../store/modalState";
 import useSupplyStore from "../store/supplyState";
 
-interface OwnProps {
-	supplyTypeList: string[];
+interface supplyType {
+	type: string;
+	dataProvided: string[];
 }
+interface OwnProps {
+	supplyTypeList: supplyType[];
+}
+
 const Modal: React.FC<OwnProps> = ({ supplyTypeList }) => {
 	const isDeviceModelCreateModalOpened = useModalStore(
 		(state) => state.isDeviceModelCreateModalOpened

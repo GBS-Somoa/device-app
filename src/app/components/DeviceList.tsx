@@ -15,6 +15,7 @@ interface OwnProps {
 }
 interface DeviceListData {
 	deviceModel: string;
+	deviceModelId: string;
 	deviceId: string[];
 }
 
@@ -26,7 +27,7 @@ const DeviceList: React.FC<OwnProps> = ({
 	const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
 	const [deviceList, setDeviceList] = useState<DeviceListData[]>([]);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		const data = {
 			manufacturer: selectedManufacturer,
@@ -36,9 +37,26 @@ const DeviceList: React.FC<OwnProps> = ({
 		if (selectedManufacturer && selectedDeviceType) {
 			console.log(data);
 			// TODO:: 서버에 기기 목록 조회 요청 보내기
+
+			// Send a fetch request to your server
+			// try {
+			// 	const response = await fetch(
+			// 		`/api/device?manufacturer=${selectedManufacturer}&device_type=${selectedDeviceType}`
+			// 	);
+
+			// 	if (!response.ok) {
+			// 		throw new Error("Network response was not ok");
+			// 	}
+			// 	const responseData = await response.json();
+			// 	setDeviceList(responseData.data);
+			// } catch (error) {
+			// 	console.error("Error fetching data:", error);
+			// }
+
 			setDeviceList([
 				{
 					deviceModel: "삼성 BESPOKE 스마트 세탁기",
+					deviceModelId: "asdf1",
 					deviceId: [
 						"1234-5678-9012",
 						"1234-5678-9013",
@@ -48,6 +66,7 @@ const DeviceList: React.FC<OwnProps> = ({
 				},
 				{
 					deviceModel: "삼성 완전 최신 세탁기",
+					deviceModelId: "asdf2",
 					deviceId: [
 						"1234-5678-9017",
 						"1234-5678-9018",
@@ -57,6 +76,7 @@ const DeviceList: React.FC<OwnProps> = ({
 				},
 				{
 					deviceModel: "삼성 새로 나온 세탁기",
+					deviceModelId: "asdf3",
 					deviceId: [
 						"1234-5678-9022",
 						"1234-5678-9023",
@@ -88,21 +108,37 @@ const DeviceList: React.FC<OwnProps> = ({
 	};
 
 	// 기기 생성
-	const createDeviceInstance = (selectedDeviceModel: string) => {
+	const createDeviceInstance = async (selectedDeviceModelId: string) => {
 		// TODO: deviceId 새로 만들어서 서버에 생성 요청, deviceList에 추가해서 화면에 렌더링
-		const newDeviceId = "123412414";
-		setDeviceList((prev) =>
-			prev.map((device) => {
-				if (device.deviceModel === selectedDeviceModel) {
-					return {
-						...device,
-						deviceId: [...device.deviceId, newDeviceId],
-					};
-				} else {
-					return { ...device };
-				}
+
+		// Send a fetch request to your server
+		await fetch("/api/device", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ deviceModelId: selectedDeviceModelId }),
+		})
+			.then((response) => {
+				const newDeviceId = response.data.deviceId;
+				setDeviceList((prev) =>
+					prev.map((device) => {
+						if (device.deviceModelId === selectedDeviceModelId) {
+							return {
+								...device,
+								deviceId: [...device.deviceId, newDeviceId],
+							};
+						} else {
+							return { ...device };
+						}
+					})
+				);
+				// Handle the response
 			})
-		);
+			.catch((error) => {
+				// Handle errors
+				console.log(error);
+			});
 	};
 
 	// 기기 상세 조회 모달 띄움
@@ -247,7 +283,7 @@ const DeviceList: React.FC<OwnProps> = ({
 										<p>{item.deviceModel}</p>
 										<button
 											className="btn-primary text-base px-2 py-1 mx-1"
-											onClick={() => createDeviceInstance(item.deviceModel)}
+											onClick={() => createDeviceInstance(item.deviceModelId)}
 										>
 											기기 추가
 										</button>
