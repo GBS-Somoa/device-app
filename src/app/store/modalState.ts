@@ -10,14 +10,18 @@ interface ModalState {
 	selectedManufacturer: string;
 	selectedDeviceType: string;
 	deviceId: string;
+	confirmFunction: (() => void) | null;
 	deleteFunction: ((param: string) => void) | null;
 	deleteTarget: string;
-	setConfirmModalOpen: (confirmText: string) => void;
+	setConfirmModalOpen: (
+		confirmText: string,
+		confirmFunction?: () => void
+	) => void;
 	setConfirmModalClose: () => void;
 	setWarningModalOpen: (
 		warningText: string,
-		deleteFunction: (param: string) => void,
-		deleteTarget: string
+		deleteFunction?: (param: string) => void,
+		deleteTarget?: string
 	) => void;
 	setWarningModalClose: () => void;
 	setDeviceModelCreateModalOpen: (
@@ -39,11 +43,15 @@ const useModalStore = create<ModalState>((set) => ({
 	selectedManufacturer: "",
 	selectedDeviceType: "",
 	deviceId: "",
+	confirmFunction: null,
 	deleteFunction: null,
 	deleteTarget: "",
 
 	// 확인창 열립니다 => 하나가 열리면, 다른 모달은 모두 닫힘으로 바뀜
-	setConfirmModalOpen: (confirmText: string) =>
+	setConfirmModalOpen: (
+		confirmText: string,
+		confirmFunction?: (() => void) | null
+	) =>
 		set((state) => ({
 			...state,
 			isConfirmModalOpened: true,
@@ -51,6 +59,7 @@ const useModalStore = create<ModalState>((set) => ({
 			isDeviceModelCreateModalOpened: false,
 			isDeviceDetailModalOpened: false,
 			confirmText,
+			confirmFunction,
 		})),
 
 	// 확인창 닫힙니다
@@ -63,8 +72,8 @@ const useModalStore = create<ModalState>((set) => ({
 	// 경고창 열립니다
 	setWarningModalOpen: (
 		warningText: string,
-		deleteFunction: ((param: string) => void) | null,
-		deleteTarget: string
+		deleteFunction?: ((param: string) => void) | null,
+		deleteTarget?: string
 	) =>
 		set((state) => ({
 			...state,

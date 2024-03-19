@@ -75,15 +75,17 @@ const DeviceModelCreateForm: React.FC = () => {
 		const filteredSupplyList = supplyList.filter(
 			(item) => item.type != "" && item.name != ""
 		);
-		if (modelName.current && filteredSupplyList.length > 0) {
+		if (modelName.current?.value != "" && filteredSupplyList.length > 0) {
 			console.log({
 				manufacturer: manufacturer,
 				deviceType: deviceType,
-				modelName: modelName.current.value,
-				supplyList: supplyList,
+				modelName: modelName.current?.value,
+				supplyList: filteredSupplyList,
 			});
 
-			setConfirmModalOpen(`${modelName.current.value} 모델이 생성되었습니다`);
+			setConfirmModalOpen(`${modelName.current?.value} 모델이 생성되었습니다`);
+		} else {
+			window.alert("비어있는 값이 있어 모델을 생성할 수 없습니다.");
 		}
 	};
 

@@ -4,7 +4,9 @@ import { useRef } from "react";
 import useModalStore from "../store/modalState";
 
 export default function DeviceList() {
-	const setConfirmModalOpen = useModalStore((state) => state.setConfirmModalOpen);
+	const setConfirmModalOpen = useModalStore(
+		(state) => state.setConfirmModalOpen
+	);
 	const manufacturerName = useRef<HTMLInputElement>(null);
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -12,9 +14,10 @@ export default function DeviceList() {
 			// TODO :: 제조사 생성 api 호출 -> manufacturerList 업데이트
 			console.log(manufacturerName.current.value);
 			setConfirmModalOpen(
-				`${manufacturerName.current.value} 제조사가 생성되었습니다`
+				`${manufacturerName.current.value} 제조사가 생성되었습니다`,
+				() => window.location.reload()
 			);
-			manufacturerName.current.value = "";
+			// manufacturerName.current.value = "";
 		}
 	};
 	return (

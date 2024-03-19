@@ -11,7 +11,6 @@ interface supply {
 
 const DeviceDetailModal: React.FC = () => {
 	const supplyData = useRef<HTMLInputElement>(null);
-	const [supplyValues, setSupplyValues] = useState<string[]>([]);
 	// TODO: deviceId로 서버에 단일 조회 요청
 	const deviceId = useModalStore((state) => state.deviceId);
 	// ---------임시데이터---------
@@ -45,11 +44,13 @@ const DeviceDetailModal: React.FC = () => {
 		},
 	];
 
+	// 위의 supplyList와 동일한 값을 가지며 추가로 content 길이와 동일한 values 배열을 값으로 가진다.
 	const supplyListWithValues = supplyList.map((item) => ({
 		...item,
 		values: new Array(item.content.length).fill(undefined),
 	}));
 
+	// 입력이 달라지면, 해당하는 supplyListWithValues의 values 배열 요소를 변경한다
 	const handleInputChange = (
 		index: number,
 		contentIndex: number,
@@ -62,6 +63,7 @@ const DeviceDetailModal: React.FC = () => {
 		(state) => state.setDeviceDetailModalClose
 	);
 
+	// 소모품의 content에 따라 다른 형태의 input 필드를 렌더링하기 위한 함수
 	const supplyValueInputField = (
 		index: number,
 		contentIndex: number,
