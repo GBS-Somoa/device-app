@@ -2,8 +2,6 @@ import ManufacturerCreateForm from "./components/ManufacturerCreateForm";
 import DeviceList from "./components/DeviceList";
 import Modal from "./components/Modal";
 
-import useModalStore from "./store/modalState";
-
 const Home: React.FC = () => {
 	// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
 	// 소모품 목록 조회 요청 보내기

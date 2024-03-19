@@ -63,7 +63,7 @@ const useModalStore = create<ModalState>((set) => ({
 	// 경고창 열립니다
 	setWarningModalOpen: (
 		warningText: string,
-		deleteFunction: (() => void) | null,
+		deleteFunction: ((param: string) => void) | null,
 		deleteTarget: string
 	) =>
 		set((state) => ({
