@@ -64,7 +64,7 @@ describe("DeviceModel API 테스트", () => {
     });
   });
 
-  describe("DELETE /api/device-model", () => {
+  describe("DELETE /api/device-model?model={model}", () => {
     it("기기 모델 삭제 테스트", async () => {
       const modelName = "test1";
       const mockRequest = new NextRequest(

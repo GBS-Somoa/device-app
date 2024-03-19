@@ -57,7 +57,7 @@ describe("Manufacturer API 테스트", () => {
     });
   });
 
-  describe("DELETE /api/manufacturer", () => {
+  describe("DELETE /api/manufacturer?manufacturer={manufacturer}", () => {
     it("제조사 삭제 테스트", async () => {
       const manufacturerName = "test1";
       const mockRequest = new NextRequest(
