@@ -258,7 +258,7 @@ const DeviceList: React.FC<OwnProps> = ({
 				<select
 					name="deviceType"
 					id="deviceType"
-					className="form-item w-1/4 px-2"
+					className="form-item w-1/3 px-2"
 					value={selectedDeviceType}
 					onChange={(event: ChangeEvent<HTMLSelectElement>) => {
 						setIsSearched(false);

@@ -94,11 +94,12 @@ const DeviceModelCreateForm: React.FC = () => {
 					supplyType: item.supplyType,
 					supplyName: item.supplyName,
 					dataProvided: supplyTypeList.find(
-						(supply) => supply.type === item.supplyType
+						(supply: any) => supply.type === item.supplyType
 					)?.dataProvided,
 				};
 			});
 			// TODO: 서버에 모델 생성 요청
+			console.log(supplyTypeList);
 			console.log(bodyData);
 			try {
 				const response = await fetch("/api/device-model", {
@@ -106,7 +107,7 @@ const DeviceModelCreateForm: React.FC = () => {
 					headers: {
 						Authorization: session?.user.accessToken,
 					},
-					body: JSON.stringify({ bodyData }),
+					body: JSON.stringify(bodyData),
 				});
 
 				if (!response.ok) {
@@ -118,8 +119,8 @@ const DeviceModelCreateForm: React.FC = () => {
 			}
 
 			setConfirmModalOpen(
-				`${modelName.current?.value} 모델이 생성되었습니다`
-				// () => window.location.reload()
+				`${modelName.current?.value} 모델이 생성되었습니다`,
+				() => window.location.reload()
 			);
 		} else {
 			window.alert("비어있는 값이 있어 모델을 생성할 수 없습니다.");
