@@ -1,18 +1,33 @@
-interface OwnProps {
-	name: string;
-	type: string;
-}
+import useModalStore from "../store/modalState";
 
-const ConfirmModal: React.FC<OwnProps> = ({ name, type }) => {
+const ConfirmModal: React.FC = () => {
+	const confirmText = useModalStore((state) => state.confirmText);
+	const confirmFunction = useModalStore((state) => state.confirmFunction);
+	const setConfirmModalClose = useModalStore(
+		(state) => state.setConfirmModalClose
+	);
+
 	return (
-		<div id="outer-layer">
+		<div
+			id="outer-layer"
+			onClick={() => {
+				setConfirmModalClose();
+				confirmFunction && confirmFunction();
+			}}
+		>
 			<div
 				id="inner-layer"
-				className="w-[100px] h-[50px] bg-primary rounded-lg"
+				className="relative w-[350px] h-[170px] bg-primary rounded-lg text-center py-5 px-10"
 			>
-				{name} {type} 가 생성되었습니다.
+				<p className="text-lg break-keep">{confirmText}</p>
 				{/* 확인 클릭 시, 모달창 꺼짐 */}
-				<button className="btn-primary" onClick={handleClick}>
+				<button
+					className="absolute btn-primary px-3 py-2 inset-x-36 bottom-2"
+					onClick={() => {
+						setConfirmModalClose();
+						confirmFunction && confirmFunction();
+					}}
+				>
 					확인
 				</button>
 			</div>
