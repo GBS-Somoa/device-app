@@ -12,6 +12,7 @@ const ConfirmModal: React.FC = () => {
 			id="outer-layer"
 			onClick={() => {
 				setConfirmModalClose();
+				confirmFunction && confirmFunction();
 			}}
 		>
 			<div

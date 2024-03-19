@@ -2,11 +2,13 @@ import ManufacturerCreateForm from "./components/ManufacturerCreateForm";
 import DeviceList from "./components/DeviceList";
 import Modal from "./components/Modal";
 
-const Home: React.FC = () => {
+const Home: React.FC = async () => {
 	// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
 	// 소모품 목록 조회 요청 보내기
 	// 기기 종류 조회 요청 보내기
 	// -> props로 자식 컴포넌트에 넘겨줌
+
+	// const response = await fetch("/api/manufacturer");
 
 	// ---------예시 데이터-------
 	const manufacturerList: string[] = ["Samsung", "LG", "Apple"];
