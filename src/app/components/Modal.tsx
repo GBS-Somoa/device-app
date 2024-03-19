@@ -6,17 +6,8 @@ import ConfirmModal from "../components/ConfirmModal";
 import WarningModal from "../components/WarningModal";
 
 import useModalStore from "../store/modalState";
-import useSupplyStore from "../store/supplyState";
 
-interface supplyType {
-	type: string;
-	dataProvided: string[];
-}
-interface OwnProps {
-	supplyTypeList: supplyType[];
-}
-
-const Modal: React.FC<OwnProps> = ({ supplyTypeList }) => {
+const Modal: React.FC = () => {
 	const isDeviceModelCreateModalOpened = useModalStore(
 		(state) => state.isDeviceModelCreateModalOpened
 	);
@@ -29,9 +20,6 @@ const Modal: React.FC<OwnProps> = ({ supplyTypeList }) => {
 	const isWarningModalOpened = useModalStore(
 		(state) => state.isWarningModalOpened
 	);
-
-	const setSupplyTypeList = useSupplyStore((state) => state.setSupplyTypeList);
-	setSupplyTypeList(supplyTypeList);
 
 	return (
 		<>
