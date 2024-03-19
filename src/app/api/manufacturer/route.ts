@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
   await dbConnect();
 
   try {
-    const manufacturers = await Manufacturer.find();
-    const deviceTypes = await DeviceType.find();
-    const supplyTypes = await SupplyType.find();
+    const manufacturers = await Manufacturer.find({}, { _id: 0 });
+    const deviceTypes = await DeviceType.find({}, { _id: 0 });
+    const supplyTypes = await SupplyType.find({}, { _id: 0 });
     return NextResponse.json(
       {
         message: "제조사 목록, 기기 종류, 소모품 종류 조회",
@@ -31,11 +31,6 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 }
     );
-
-    // 캐싱 적용 시
-    // const response = NextResponse.json(manufacturers, { status: 200 });
-    // response.headers.set('Cache-Control', 'public, max-age=600, must-revalidate');
-    // return response;
   } catch (error) {
     console.error("Failed to fetch manufacturers", error);
     return NextResponse.json(
@@ -63,7 +58,10 @@ export async function POST(request: NextRequest) {
 
     await manufacturer.save();
     return NextResponse.json(
-      { message: "제조사가 생성되었습니다.", data: manufacturer },
+      {
+        message: "제조사가 생성되었습니다.",
+        data: { name: manufacturer.name },
+      },
       { status: 201 }
     );
   } catch (error) {

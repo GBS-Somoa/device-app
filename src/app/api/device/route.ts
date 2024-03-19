@@ -31,16 +31,24 @@ export async function GET(request: NextRequest) {
         deviceType: deviceType,
       });
 
-      const result: any = {};
+      const result: any[] = [];
 
       for (const model of deviceModels) {
-        const deviceInstances = await DeviceInstance.find({
+        const deviceIds = await DeviceInstance.find({
           deviceModelId: model._id,
+        }).distinct("deviceId");
+
+        result.push({
+          deviceModel: model.deviceModel,
+          deviceModelId: model._id,
+          deviceIds,
         });
-
-        const deviceIds = deviceInstances.map((instance) => instance.deviceId);
-
-        result[model.deviceModel] = { deviceIds };
+      }
+      if (result.length === 0) {
+        return NextResponse.json(
+          { message: "해당하는 모델-기기 목록이 없습니다." },
+          { status: 404 }
+        );
       }
       return NextResponse.json(
         { message: "기기 목록 조회에 성공했습니다.", data: result },
@@ -49,9 +57,12 @@ export async function GET(request: NextRequest) {
     } else if (deviceId) {
       const deviceInstance = await DeviceInstance.findOne({
         deviceId: deviceId,
-      }).populate("deviceModelId");
+      }).populate("deviceModelId", "-_id");
       return NextResponse.json(
-        { message: "기기 단일 조회에 성공했습니다.", data: deviceInstance },
+        {
+          message: "기기 단일 조회에 성공했습니다.",
+          data: deviceInstance.deviceModelId,
+        },
         { status: 200 }
       );
     } else {
@@ -87,13 +98,52 @@ export async function POST(request: NextRequest) {
 
     await deviceInstance.save();
     return NextResponse.json(
-      { message: "기기가 생성되었습니다.", data: deviceInstance },
+      {
+        message: "기기가 생성되었습니다.",
+        data: { deviceId: deviceInstance.deviceId },
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("Failed to create device instance", error);
     return NextResponse.json(
       { message: "Failed to create device instance" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  if (!verifyAccessToken(request)) {
+    return new Response(JSON.stringify({ error: "No Authorization" }), {
+      status: 401,
+    });
+  }
+
+  await dbConnect();
+
+  try {
+    const deviceId = request.nextUrl.searchParams.get("device_id");
+
+    const deviceInstance = await DeviceInstance.findOneAndDelete({
+      deviceId,
+    });
+
+    if (!deviceInstance) {
+      return NextResponse.json(
+        { message: "해당하는 기기가 없습니다." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "기기가 삭제되었습니다." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Failed to delete device instance", error);
+    return NextResponse.json(
+      { message: "Failed to delete device instance" },
       { status: 500 }
     );
   }
