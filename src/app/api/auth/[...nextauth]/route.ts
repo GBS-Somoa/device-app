@@ -2,52 +2,52 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
-	providers: [
-		CredentialsProvider({
-			id: "credentials",
-			name: "Credentials",
-			credentials: {
-				email: { label: "Email", type: "email" },
-				password: { label: "Password", type: "password" },
-			},
-			async authorize(credentials) {
-				try {
-					const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							email: credentials?.email,
-							password: credentials?.password,
-						}),
-					});
-					const user = await res.json();
-					if (user) {
-						console.log(user);
-						return user;
-					} else {
-						return null;
-					}
-				} catch (error: any) {
-					throw new Error(error);
-				}
-			},
-		}),
-	],
-	session: {
-		maxAge: 60 * 60,
-	},
-	callbacks: {
-		async jwt({ token, user }: any) {
-			return { ...token, ...user };
-		},
-		async session({ session, token }: any) {
-			session.user = token as any;
-			console.log(session.user);
-			return session;
-		},
-	},
+  providers: [
+    CredentialsProvider({
+      id: "credentials",
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+          });
+          const user = await res.json();
+          if (user) {
+            console.log(user);
+            return user;
+          } else {
+            return null;
+          }
+        } catch (error: any) {
+          throw new Error(error);
+        }
+      },
+    }),
+  ],
+  session: {
+    maxAge: 60 * 60,
+  },
+  callbacks: {
+    async jwt({ token, user }: any) {
+      return { ...token, ...user };
+    },
+    async session({ session, token }: any) {
+      session.user = token as any;
+      console.log(session.user);
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
