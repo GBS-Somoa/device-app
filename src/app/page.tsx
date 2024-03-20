@@ -25,7 +25,7 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
-		console.log(session);
+		console.log("sessionStatus:", sessionStatus);
 		fetch("/api/manufacturer", {
 			method: "GET",
 			headers: {

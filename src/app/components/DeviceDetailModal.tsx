@@ -86,12 +86,13 @@ const DeviceDetailModal: React.FC = () => {
 					<>
 						<select
 							className="form-item px-2 py-1 w-1/2"
+							defaultValue=""
 							value={supplyListWithValues[index].values[dataIndex]}
 							onChange={(event) =>
 								handleInputChange(index, dataIndex, event.target.value)
 							}
 						>
-							<option style={{ display: "none" }} selected value=""></option>
+							<option style={{ display: "none" }} value=""></option>
 							{[...Array(101)].map((_, index) => (
 								<option key={index} value={index}>
 									{index}
@@ -137,12 +138,13 @@ const DeviceDetailModal: React.FC = () => {
 							<select
 								id="status"
 								className="form-item px-2 py-1 w-1/2"
+								defaultValue=""
 								value={supplyListWithValues[index].values[dataIndex]}
 								onChange={(event) =>
 									handleInputChange(index, dataIndex, event.target.value)
 								}
 							>
-								<option style={{ display: "none" }} selected value=""></option>
+								<option style={{ display: "none" }} value=""></option>
 								{[...Array(10)].map((_, index) => (
 									<option key={index} value={index + 1}>
 										{index + 1}
