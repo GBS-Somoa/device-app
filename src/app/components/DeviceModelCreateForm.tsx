@@ -1,16 +1,19 @@
 "use client";
 
 import { useRef, useState, ChangeEvent } from "react";
+import { useSession } from "next-auth/react";
 import SupplyAddForm from "./SupplyAddForm";
 import useModalStore from "../store/modalState";
+import useSupplyStore from "../store/supplyState";
 
 interface Supply {
 	id: number;
-	type: string;
-	name: string;
+	supplyType: string;
+	supplyName: string;
 }
 
 const DeviceModelCreateForm: React.FC = () => {
+	const { data: session } = useSession();
 	const setDeviceModelCreateModalClose = useModalStore(
 		(state) => state.setDeviceModelCreateModalClose
 	);
@@ -20,23 +23,22 @@ const DeviceModelCreateForm: React.FC = () => {
 	const manufacturer = useModalStore((state) => state.selectedManufacturer);
 	const deviceType = useModalStore((state) => state.selectedDeviceType);
 	const modelName = useRef<HTMLInputElement>(null);
+	const supplyTypeList = useSupplyStore((state) => state.supplyTypeList);
 	const [supplyList, setSupplyList] = useState<Supply[]>([
-		{ id: 0, type: "", name: "" },
+		{ id: 0, supplyType: "", supplyName: "" },
 	]);
 
 	// 소모품 추가
 	const handleAddSupply = () => {
 		setSupplyList((prev) => {
 			const lastId: number = prev[prev.length - 1].id;
-			console.log([...prev, { id: lastId + 1, type: "", name: "" }]);
-			return [...prev, { id: lastId + 1, type: "", name: "" }];
+			return [...prev, { id: lastId + 1, supplyType: "", supplyName: "" }];
 		});
 	};
 
 	// 소모품 삭제
 	const deleteSupply = () => {
 		setSupplyList((prev) => {
-			console.log(prev.slice(0, -1));
 			return prev.slice(0, -1);
 		});
 	};
@@ -46,7 +48,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
 				if (item.id === id) {
-					return { ...item, type: changedType };
+					return { ...item, supplyType: changedType };
 				}
 				return item;
 			});
@@ -58,7 +60,7 @@ const DeviceModelCreateForm: React.FC = () => {
 		setSupplyList((prev) => {
 			return prev.map((item) => {
 				if (item.id === id) {
-					return { ...item, name: changedName };
+					return { ...item, supplyName: changedName };
 				}
 				return item;
 			});
@@ -66,24 +68,52 @@ const DeviceModelCreateForm: React.FC = () => {
 	};
 
 	// 기기 모델 생성 요청
-	const createDeviceModel = () => {
-		// TODO
+	const createDeviceModel = async () => {
 		// 기기 모델명 있는지 확인, 소모품 1개 이상 필수
-		// supplyList 중에서 type, name이 다 있는 배열만 추려서
-		// 기기 모델 생성 api 요청 보내기
+		// supplyList 중에서 supplyType, supplyName이 다 있는 배열만 추려서
+		// 기기 모델 생성 요청 보내기
 
 		const filteredSupplyList = supplyList.filter(
-			(item) => item.type != "" && item.name != ""
+			(item) => item.supplyType != "" && item.supplyName != ""
 		);
 		if (modelName.current?.value != "" && filteredSupplyList.length > 0) {
-			console.log({
-				manufacturer: manufacturer,
-				deviceType: deviceType,
-				modelName: modelName.current?.value,
-				supplyList: filteredSupplyList,
+			const bodyData = {
+				deviceModel: modelName.current?.value,
+				deviceManufacturer: manufacturer,
+				deviceType,
+				supplies: [],
+			};
+			bodyData.supplies = filteredSupplyList.map((item) => {
+				return {
+					supplyType: item.supplyType,
+					supplyName: item.supplyName,
+					dataProvided: supplyTypeList.find(
+						(supply: any) => supply.type === item.supplyType
+					)?.dataProvided,
+				};
 			});
+			// 서버에 모델 생성 요청
+			try {
+				const response = await fetch("/api/device-model", {
+					method: "POST",
+					headers: {
+						Authorization: session ? session.user.accessToken : "",
+					},
+					body: JSON.stringify(bodyData),
+				});
 
-			setConfirmModalOpen(`${modelName.current?.value} 모델이 생성되었습니다`);
+				if (!response.ok) {
+					const responseData = await response.json();
+					throw new Error(responseData.message);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+
+			setConfirmModalOpen(
+				`${modelName.current?.value} 모델이 생성되었습니다`,
+				() => window.location.reload()
+			);
 		} else {
 			window.alert("비어있는 값이 있어 모델을 생성할 수 없습니다.");
 		}
@@ -93,7 +123,6 @@ const DeviceModelCreateForm: React.FC = () => {
 		<div
 			id="outer-layer"
 			onClick={(e) => {
-				console.log(e.target);
 				if (e.target.id && e.target.id == "outer-layer") {
 					setDeviceModelCreateModalClose();
 				}

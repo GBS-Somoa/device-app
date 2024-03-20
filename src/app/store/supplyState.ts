@@ -1,13 +1,17 @@
 import { create } from "zustand";
 
+interface supplyType {
+	type: string;
+	dataProvided: string[];
+}
 interface SupplyStoreState {
-	supplyTypeList: any[];
-	setSupplyTypeList: (data: any[]) => void;
+	supplyTypeList: supplyType[];
+	setSupplyTypeList: (data: supplyType[]) => void;
 }
 
 const useSupplyStore = create<SupplyStoreState>((set) => ({
 	supplyTypeList: [],
-	setSupplyTypeList: (data: any[]) => {
+	setSupplyTypeList: (data: supplyType[]) => {
 		set((state) => ({
 			...state,
 			supplyTypeList: data,

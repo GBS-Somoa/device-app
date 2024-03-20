@@ -7,6 +7,8 @@
 "use client";
 
 import { useRef, useState, ChangeEvent } from "react";
+import { useSession } from "next-auth/react";
+
 import useModalStore from "../store/modalState";
 
 interface OwnProps {
@@ -16,16 +18,18 @@ interface OwnProps {
 interface DeviceListData {
 	deviceModel: string;
 	deviceModelId: string;
-	deviceId: string[];
+	deviceIds: string[];
 }
 
 const DeviceList: React.FC<OwnProps> = ({
 	manufacturerList,
 	deviceTypeList,
 }) => {
+	const { data: session } = useSession();
 	const [selectedManufacturer, setSelectedManufacturer] = useState<string>("");
 	const [selectedDeviceType, setSelectedDeviceType] = useState<string>("");
 	const [deviceList, setDeviceList] = useState<DeviceListData[]>([]);
+	const [isSearched, setIsSearched] = useState<boolean>(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -35,56 +39,62 @@ const DeviceList: React.FC<OwnProps> = ({
 		};
 
 		if (selectedManufacturer && selectedDeviceType) {
-			console.log(data);
-			// TODO:: 서버에 기기 목록 조회 요청 보내기
-
+			// 서버에 기기 목록 조회 요청
 			// Send a fetch request to your server
-			// try {
-			// 	const response = await fetch(
-			// 		`/api/device?manufacturer=${selectedManufacturer}&device_type=${selectedDeviceType}`
-			// 	);
+			try {
+				const response = await fetch(
+					`/api/device?manufacturer=${selectedManufacturer}&device_type=${selectedDeviceType}`,
+					{
+						method: "GET",
+						headers: { Authorization: session ? session.user.accessToken : "" },
+					}
+				);
 
-			// 	if (!response.ok) {
-			// 		throw new Error("Network response was not ok");
-			// 	}
-			// 	const responseData = await response.json();
-			// 	setDeviceList(responseData.data);
-			// } catch (error) {
-			// 	console.error("Error fetching data:", error);
-			// }
+				if (!response.ok) {
+					const responseData = await response.json();
+					throw new Error(responseData.message);
+				}
+				const responseData = await response.json();
+				setIsSearched(true);
+				setDeviceList(responseData.data);
+			} catch (error) {
+				setIsSearched(true);
+				console.error(error);
+				setDeviceList([]);
+			}
 
-			setDeviceList([
-				{
-					deviceModel: "삼성 BESPOKE 스마트 세탁기",
-					deviceModelId: "asdf1",
-					deviceId: [
-						"1234-5678-9012",
-						"1234-5678-9013",
-						"1234-5678-9014",
-						"1234-5678-9015",
-					],
-				},
-				{
-					deviceModel: "삼성 완전 최신 세탁기",
-					deviceModelId: "asdf2",
-					deviceId: [
-						"1234-5678-9017",
-						"1234-5678-9018",
-						"1234-5678-9019",
-						"1234-5678-9021",
-					],
-				},
-				{
-					deviceModel: "삼성 새로 나온 세탁기",
-					deviceModelId: "asdf3",
-					deviceId: [
-						"1234-5678-9022",
-						"1234-5678-9023",
-						"1234-5678-9024",
-						"1234-5678-9025",
-					],
-				},
-			]);
+			// setDeviceList([
+			// 	{
+			// 		deviceModel: "삼성 BESPOKE 스마트 세탁기",
+			// 		deviceModelId: "asdf1",
+			// 		deviceId: [
+			// 			"1234-5678-9012",
+			// 			"1234-5678-9013",
+			// 			"1234-5678-9014",
+			// 			"1234-5678-9015",
+			// 		],
+			// 	},
+			// 	{
+			// 		deviceModel: "삼성 완전 최신 세탁기",
+			// 		deviceModelId: "asdf2",
+			// 		deviceId: [
+			// 			"1234-5678-9017",
+			// 			"1234-5678-9018",
+			// 			"1234-5678-9019",
+			// 			"1234-5678-9021",
+			// 		],
+			// 	},
+			// 	{
+			// 		deviceModel: "삼성 새로 나온 세탁기",
+			// 		deviceModelId: "asdf3",
+			// 		deviceId: [
+			// 			"1234-5678-9022",
+			// 			"1234-5678-9023",
+			// 			"1234-5678-9024",
+			// 			"1234-5678-9025",
+			// 		],
+			// 	},
+			// ]);
 		} else {
 			window.alert("제조사와 기기 종류를 선택하세요");
 		}
@@ -109,36 +119,39 @@ const DeviceList: React.FC<OwnProps> = ({
 
 	// 기기 생성
 	const createDeviceInstance = async (selectedDeviceModelId: string) => {
-		// TODO: deviceId 새로 만들어서 서버에 생성 요청, deviceList에 추가해서 화면에 렌더링
-
+		// deviceId 새로 만들어서 서버에 생성 요청, deviceList에 추가해서 화면에 렌더링
 		// Send a fetch request to your server
-		await fetch("/api/device", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ deviceModelId: selectedDeviceModelId }),
-		})
-			.then((response) => {
-				const newDeviceId = response.data.deviceId;
-				setDeviceList((prev) =>
-					prev.map((device) => {
-						if (device.deviceModelId === selectedDeviceModelId) {
-							return {
-								...device,
-								deviceId: [...device.deviceId, newDeviceId],
-							};
-						} else {
-							return { ...device };
-						}
-					})
-				);
-				// Handle the response
-			})
-			.catch((error) => {
-				// Handle errors
-				console.log(error);
+		try {
+			const response = await fetch("/api/device", {
+				method: "POST",
+				headers: {
+					Authorization: session ? session.user.accessToken : "",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ deviceModelId: selectedDeviceModelId }),
 			});
+
+			if (!response.ok) {
+				const responseData = await response.json();
+				throw new Error(responseData.message);
+			}
+			const responseData = await response.json();
+			const newDeviceId = responseData.data.deviceId;
+			setDeviceList((prev) =>
+				prev.map((device) => {
+					if (device.deviceModelId === selectedDeviceModelId) {
+						return {
+							...device,
+							deviceIds: [...device.deviceIds, newDeviceId],
+						};
+					} else {
+						return { ...device };
+					}
+				})
+			);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	// 기기 상세 조회 모달 띄움
@@ -147,27 +160,41 @@ const DeviceList: React.FC<OwnProps> = ({
 	};
 
 	// ------------- 삭제 요청 함수 ----------------
+	const deleteFetch = async (url: string) => {
+		try {
+			const response = await fetch(url, {
+				method: "DELETE",
+				headers: {
+					Authorization: session ? session.user.accessToken : "",
+				},
+			});
+
+			if (!response.ok) {
+				const responseData = await response.json();
+				throw new Error(responseData.message);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 	const deleteManufacturerRequest = (param: string) => {
-		// TODO: 서버에 삭제요청
-		console.log("제조사", param, "삭제 요청");
+		deleteFetch(`/api/manufacturer?manufacturer=${param}`);
 		window.location.reload();
 	};
 
 	const deleteDeviceModelRequest = (param: string) => {
-		// TODO: 서버에 삭제요청
-		console.log("기기 모델", param, "삭제 요청");
+		deleteFetch(`/api/device-model?model=${param}`);
 		setDeviceList((prev) =>
 			prev.filter((item, index) => item.deviceModel !== param)
 		);
 	};
 
 	const deleteDeviceRequest = (param: string) => {
-		// TODO: 서버에 삭제요청
-		console.log("기기", param, "삭제 요청");
+		deleteFetch(`/api/device?device_id=${param}`);
 		setDeviceList((prev) =>
 			prev.map((device) => ({
 				...device,
-				deviceId: device.deviceId.filter((id) => id !== param),
+				deviceIds: device.deviceIds.filter((id) => id !== param),
 			}))
 		);
 	};
@@ -210,6 +237,7 @@ const DeviceList: React.FC<OwnProps> = ({
 					className="form-item w-1/4 px-2"
 					value={selectedManufacturer}
 					onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+						setIsSearched(false);
 						setSelectedManufacturer(event.target.value);
 					}}
 				>
@@ -226,9 +254,10 @@ const DeviceList: React.FC<OwnProps> = ({
 				<select
 					name="deviceType"
 					id="deviceType"
-					className="form-item w-1/4 px-2"
+					className="form-item w-1/3 px-2"
 					value={selectedDeviceType}
 					onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+						setIsSearched(false);
 						setSelectedDeviceType(event.target.value);
 					}}
 				>
@@ -248,7 +277,7 @@ const DeviceList: React.FC<OwnProps> = ({
 			</form>
 
 			{/* 조회된 기기 목록 */}
-			{deviceList.length > 0 ? (
+			{isSearched ? (
 				<div className="w-2/3 mx-auto">
 					<div id="header" className="flex space-x-3 m-2">
 						<p className="my-auto text-bold text-lg">
@@ -275,48 +304,57 @@ const DeviceList: React.FC<OwnProps> = ({
 						<p className="w-48">Device Id</p>
 					</div>
 					<hr />
-					{deviceList.map((item, index) => {
-						return (
-							<>
-								<div key={index} className="flex px-10 justify-between text-lg">
-									<div>
-										<p>{item.deviceModel}</p>
-										<button
-											className="btn-primary text-base px-2 py-1 mx-1"
-											onClick={() => createDeviceInstance(item.deviceModelId)}
-										>
-											기기 추가
-										</button>
-										<button
-											className="btn-delete text-base px-2 py-1 mx-1"
-											onClick={() => deleteDeviceModel(item.deviceModel)}
-										>
-											모델 삭제
-										</button>
+					{deviceList.length > 0 ? (
+						deviceList.map((item, index) => {
+							return (
+								<>
+									<div
+										key={index}
+										className="flex px-10 justify-between text-lg"
+									>
+										<div>
+											<p>{item.deviceModel}</p>
+											<button
+												className="btn-primary text-base px-2 py-1 mx-1"
+												onClick={() => createDeviceInstance(item.deviceModelId)}
+											>
+												기기 추가
+											</button>
+											<button
+												className="btn-delete text-base px-2 py-1 mx-1"
+												onClick={() => deleteDeviceModel(item.deviceModel)}
+											>
+												모델 삭제
+											</button>
+										</div>
+										<ul>
+											{item.deviceIds.map((serial, idx) => (
+												<li key={idx} className="flex my-1 justify-end">
+													<p
+														className="hover:font-bold cursor-pointer"
+														onClick={() => handleClickDeviceId(serial)}
+													>
+														{serial}
+													</p>
+													<button
+														className="btn-delete text-base px-2 py-1 mx-1"
+														onClick={() => deleteDeviceInstance(serial)}
+													>
+														삭제
+													</button>
+												</li>
+											))}
+										</ul>
 									</div>
-									<ul>
-										{item.deviceId.map((serial, idx) => (
-											<li key={idx} className="flex my-1 justify-end">
-												<p
-													className="hover:font-bold cursor-pointer"
-													onClick={() => handleClickDeviceId(serial)}
-												>
-													{serial}
-												</p>
-												<button
-													className="btn-delete text-base px-2 py-1 mx-1"
-													onClick={() => deleteDeviceInstance(serial)}
-												>
-													삭제
-												</button>
-											</li>
-										))}
-									</ul>
-								</div>
-								<hr />
-							</>
-						);
-					})}
+									<hr />
+								</>
+							);
+						})
+					) : (
+						<div className="text-center m-2">
+							제조사 - 기기 종류 목록이 없습니다
+						</div>
+					)}
 				</div>
 			) : (
 				<div></div>
