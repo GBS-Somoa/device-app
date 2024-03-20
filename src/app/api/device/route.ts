@@ -10,10 +10,15 @@ interface DeviceInstanceApiRequest {
 }
 
 export async function GET(request: NextRequest) {
-  if (!verifyAccessToken(request)) {
-    return new Response(JSON.stringify({ error: "No Authorization" }), {
-      status: 401,
-    });
+  const origin = request.headers.get("origin");
+  const serviceUrl: any = process.env.SERVICE_URL;
+
+  if (origin !== serviceUrl) {
+    if (!verifyAccessToken(request)) {
+      return new Response(JSON.stringify({ error: "No Authorization" }), {
+        status: 401,
+      });
+    }
   }
 
   await dbConnect();
@@ -58,13 +63,23 @@ export async function GET(request: NextRequest) {
       const deviceInstance = await DeviceInstance.findOne({
         deviceId: deviceId,
       }).populate("deviceModelId", "-_id");
-      return NextResponse.json(
+      if (!deviceInstance) {
+        const response = NextResponse.json(
+          { message: "해당하는 기기가 없습니다." },
+          { status: 404 }
+        );
+        response.headers.set("Access-Control-Allow-Origin", serviceUrl);
+        return response;
+      }
+      const response = NextResponse.json(
         {
           message: "기기 단일 조회에 성공했습니다.",
           data: deviceInstance.deviceModelId,
         },
         { status: 200 }
       );
+      response.headers.set("Access-Control-Allow-Origin", serviceUrl);
+      return response;
     } else {
       return NextResponse.json(
         { error: "Invalid query parameters" },
