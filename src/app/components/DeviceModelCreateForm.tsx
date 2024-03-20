@@ -97,7 +97,7 @@ const DeviceModelCreateForm: React.FC = () => {
 				const response = await fetch("/api/device-model", {
 					method: "POST",
 					headers: {
-						Authorization: session?.user.accessToken,
+						Authorization: session ? session.user.accessToken : "",
 					},
 					body: JSON.stringify(bodyData),
 				});

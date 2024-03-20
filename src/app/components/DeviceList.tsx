@@ -46,7 +46,7 @@ const DeviceList: React.FC<OwnProps> = ({
 					`/api/device?manufacturer=${selectedManufacturer}&device_type=${selectedDeviceType}`,
 					{
 						method: "GET",
-						headers: { Authorization: session?.user.accessToken },
+						headers: { Authorization: session ? session.user.accessToken : "" },
 					}
 				);
 
@@ -125,7 +125,7 @@ const DeviceList: React.FC<OwnProps> = ({
 			const response = await fetch("/api/device", {
 				method: "POST",
 				headers: {
-					Authorization: session?.user.accessToken,
+					Authorization: session ? session.user.accessToken : "",
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({ deviceModelId: selectedDeviceModelId }),
@@ -165,7 +165,7 @@ const DeviceList: React.FC<OwnProps> = ({
 			const response = await fetch(url, {
 				method: "DELETE",
 				headers: {
-					Authorization: session?.user.accessToken,
+					Authorization: session ? session.user.accessToken : "",
 				},
 			});
 

@@ -29,7 +29,7 @@ const Home: React.FC = () => {
 		fetch("/api/manufacturer", {
 			method: "GET",
 			headers: {
-				Authorization: session?.user.accessToken,
+				Authorization: session ? session.user.accessToken : "",
 			},
 		})
 			.then((res) => {

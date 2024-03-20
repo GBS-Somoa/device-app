@@ -21,7 +21,7 @@ const DeviceDetailModal: React.FC = () => {
 		fetch(`api/device?device_id=${deviceId}`, {
 			method: "GET",
 			headers: {
-				Authorization: session?.user.accessToken,
+				Authorization: session ? session.user.accessToken : "",
 			},
 		})
 			.then((res) => {
@@ -165,6 +165,7 @@ const DeviceDetailModal: React.FC = () => {
 		console.log("동작");
 		console.log({
 			...deviceDetailData,
+			deviceId,
 			supplies: supplyListWithValues,
 		});
 		// setDeviceDetailModalClose();

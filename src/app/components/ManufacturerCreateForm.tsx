@@ -18,7 +18,7 @@ export default function DeviceList() {
 				const response = await fetch("/api/manufacturer", {
 					method: "POST",
 					headers: {
-						Authorization: session?.user.accessToken,
+						Authorization: session ? session.user.accessToken : "",
 					},
 					body: JSON.stringify({ name: manufacturerName.current.value }),
 				});
