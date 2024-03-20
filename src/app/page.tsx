@@ -25,7 +25,7 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		// 렌더링 시점에 제조사 목록 조회 요청 보내기 => 이때 제조사 목록, 소모품 목록, 기기 종류 모두 응답함
-		console.log("sessionStatus:", sessionStatus);
+		// console.log("sessionStatus:", sessionStatus);
 		fetch("/api/manufacturer", {
 			method: "GET",
 			headers: {
@@ -67,7 +67,6 @@ const Home: React.FC = () => {
 					className="absolute top-2 left-1/2 transform -translate-x-1/2 p-2 btn-delete"
 					onClick={() => {
 						signOut();
-						console.log(sessionStatus);
 					}}
 				>
 					로그아웃

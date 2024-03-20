@@ -32,10 +32,6 @@ const DeviceModelCreateForm: React.FC = () => {
 	const handleAddSupply = () => {
 		setSupplyList((prev) => {
 			const lastId: number = prev[prev.length - 1].id;
-			console.log([
-				...prev,
-				{ id: lastId + 1, supplyType: "", supplyName: "" },
-			]);
 			return [...prev, { id: lastId + 1, supplyType: "", supplyName: "" }];
 		});
 	};
@@ -43,7 +39,6 @@ const DeviceModelCreateForm: React.FC = () => {
 	// 소모품 삭제
 	const deleteSupply = () => {
 		setSupplyList((prev) => {
-			console.log(prev.slice(0, -1));
 			return prev.slice(0, -1);
 		});
 	};
@@ -74,10 +69,9 @@ const DeviceModelCreateForm: React.FC = () => {
 
 	// 기기 모델 생성 요청
 	const createDeviceModel = async () => {
-		// TODO
 		// 기기 모델명 있는지 확인, 소모품 1개 이상 필수
-		// supplyList 중에서 type, name이 다 있는 배열만 추려서
-		// 기기 모델 생성 api 요청 보내기
+		// supplyList 중에서 supplyType, supplyName이 다 있는 배열만 추려서
+		// 기기 모델 생성 요청 보내기
 
 		const filteredSupplyList = supplyList.filter(
 			(item) => item.supplyType != "" && item.supplyName != ""
@@ -98,9 +92,7 @@ const DeviceModelCreateForm: React.FC = () => {
 					)?.dataProvided,
 				};
 			});
-			// TODO: 서버에 모델 생성 요청
-			console.log(supplyTypeList);
-			console.log(bodyData);
+			// 서버에 모델 생성 요청
 			try {
 				const response = await fetch("/api/device-model", {
 					method: "POST",

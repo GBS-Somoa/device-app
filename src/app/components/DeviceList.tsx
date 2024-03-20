@@ -39,7 +39,6 @@ const DeviceList: React.FC<OwnProps> = ({
 		};
 
 		if (selectedManufacturer && selectedDeviceType) {
-			console.log(data);
 			// 서버에 기기 목록 조회 요청
 			// Send a fetch request to your server
 			try {
@@ -180,13 +179,11 @@ const DeviceList: React.FC<OwnProps> = ({
 	};
 	const deleteManufacturerRequest = (param: string) => {
 		deleteFetch(`/api/manufacturer?manufacturer=${param}`);
-		console.log("제조사", param, "삭제 요청");
 		window.location.reload();
 	};
 
 	const deleteDeviceModelRequest = (param: string) => {
 		deleteFetch(`/api/device-model?model=${param}`);
-		console.log("기기 모델", param, "삭제 요청");
 		setDeviceList((prev) =>
 			prev.filter((item, index) => item.deviceModel !== param)
 		);
@@ -194,7 +191,6 @@ const DeviceList: React.FC<OwnProps> = ({
 
 	const deleteDeviceRequest = (param: string) => {
 		deleteFetch(`/api/device?device_id=${param}`);
-		console.log("기기", param, "삭제 요청");
 		setDeviceList((prev) =>
 			prev.map((device) => ({
 				...device,
