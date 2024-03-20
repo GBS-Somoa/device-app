@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 export default function LoginForm() {
 	type LoginFormType = {
@@ -8,18 +10,36 @@ export default function LoginForm() {
 		pw: string;
 	};
 
-	const id = useRef<HTMLInputElement>(null);
-	const pw = useRef<HTMLInputElement>(null);
+	const router = useRouter();
+	const pathname = usePathname();
+	const [error, setError] = useState("");
+	const { data: session, status: sessionStatus } = useSession();
 
-	const handleSubmit = (e: React.FormEvent) => {
+	useEffect(() => {
+		if (sessionStatus === "authenticated" && pathname !== "/") {
+			router.replace("/");
+		}
+	}, [sessionStatus, router, pathname]);
+
+	const email = useRef<HTMLInputElement>(null);
+	const password = useRef<HTMLInputElement>(null);
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (id.current && pw.current) {
-			const formData: LoginFormType = {
-				id: id.current.value,
-				pw: pw.current.value,
-			};
-			// 여기에 폼 데이터 처리 로직을 추가하세요.
-			console.log(formData);
+		if (email.current && password.current) {
+			const res = await signIn("credentials", {
+				redirect: false,
+				email: email.current.value,
+				password: password.current.value,
+			});
+
+			if (res?.ok) {
+				// 로그인 성공
+				router.replace("/");
+			} else {
+				// 로그인 실패
+				setError("이메일 또는 비밀번호를 확인하세요");
+			}
 		}
 	};
 
@@ -37,24 +57,24 @@ export default function LoginForm() {
 			<div className="mx-auto p-10 w-[500px] h-[230px] bg-blue-100 rounded-lg text-center">
 				<form onSubmit={handleSubmit}>
 					<div className="flex justify-between my-2">
-						<label htmlFor="id" className="text-xl">
-							ID
+						<label htmlFor="id" className="text-lg">
+							EMAIL
 						</label>
 						<input
 							type="text"
-							name="id"
-							ref={id}
+							name="email"
+							ref={email}
 							className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 						/>
 					</div>
 					<div className="flex justify-between my-2">
-						<label htmlFor="pw" className="text-xl">
+						<label htmlFor="password" className="text-lg">
 							PASSWORD
 						</label>
 						<input
 							type="password"
-							name="pw"
-							ref={pw}
+							name="password"
+							ref={password}
 							className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 						/>
 					</div>
