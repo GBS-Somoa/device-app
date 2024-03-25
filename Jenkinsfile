@@ -10,7 +10,7 @@ pipeline {
    stages {
      // env 복사
      stage('env copy') {
-         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'origin/test/cicd'} }
+         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop'} }
          steps {
             updateGitlabCommitStatus name: 'build', state: 'pending'
             echo "현재 브랜치 : ${env.GIT_BRANCH}"
@@ -38,7 +38,7 @@ pipeline {
 
       // Next build, docker image build
       stage('Next Build & Docker image Build') {
-         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'origin/test/cicd'} }
+         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop'} }
          steps {
             dir ('.'){
             sh """
@@ -80,7 +80,7 @@ pipeline {
 
       // docker run
       stage('Docker Run') {
-         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'origin/test/cicd'} }
+         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop'} }
          steps {
             sh """
             container=\$(docker ps -q --filter name="${env.DOCKER_IMAGE_NAME}")
@@ -109,7 +109,7 @@ pipeline {
 
       // Mattermost에 알림 보내기
       stage('Mattermost') {
-         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop' || env.GIT_BRANCH == 'origin/test/cicd'} }
+         when { expression { env.GIT_BRANCH == 'origin/master' || env.GIT_BRANCH == 'origin/develop'} }
          steps {
             mattermostSend(
               channel: "S001-Test",
