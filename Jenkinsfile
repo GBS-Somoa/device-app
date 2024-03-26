@@ -52,14 +52,6 @@ pipeline {
             }
          }
          post {
-            always {
-               sh """
-               res=\$(docker images -f "dangling=true" -q)
-               if [ -n "\$res" ]; then
-                  docker rmi \$res
-               fi
-               """
-            }
             success {
                echo 'Docker image build success :D'
             }
