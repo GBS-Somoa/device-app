@@ -159,8 +159,32 @@ const DeviceDetailModal: React.FC = () => {
     }
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     // TODO: 소모품 데이터를 담고 구조화하여 서비스앱 서버로 보내줘야함
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVICE_URL}/api/devices/${deviceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...deviceDetailData,
+            deviceId,
+            supplies: supplyListWithValues,
+          }),
+        }
+      );
+      if (response.ok) {
+        alert("소모품 데이터가 성공적으로 전송되었습니다.");
+      } else {
+        alert("소모품 데이터 전송에 실패했습니다.");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("에러가 발생했습니다.");
+    }
 
     console.log("동작");
     console.log({

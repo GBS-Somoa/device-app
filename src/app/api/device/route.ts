@@ -11,6 +11,7 @@ interface DeviceInstanceApiRequest {
 
 export async function GET(request: NextRequest) {
   const origin = request.headers.get("origin");
+  console.log("origin: ", origin);
   const serviceUrl: any = process.env.SERVICE_URL;
 
   if (origin !== serviceUrl) {
