@@ -14,13 +14,13 @@ export async function GET(request: NextRequest) {
   console.log("origin: ", origin);
   const serviceUrl: any = process.env.SERVICE_URL;
 
-  if (origin !== serviceUrl) {
-    if (!verifyAccessToken(request)) {
-      return new Response(JSON.stringify({ error: "No Authorization" }), {
-        status: 401,
-      });
-    }
-  }
+  // if (origin !== serviceUrl) {
+  //   if (!verifyAccessToken(request)) {
+  //     return new Response(JSON.stringify({ error: "No Authorization" }), {
+  //       status: 401,
+  //     });
+  //   }
+  // }
 
   await dbConnect();
 
