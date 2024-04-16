@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center"> 
+    <img src="./docs-images/service-logo.png" width="500" />
+    <h2>소모아 기기 테스트 앱</h2>
+    <p>소모아 기기 테스트 앱은 메인 서비스인 소모아와 연결할 IoT 가전기기를 대체하는 웹 사이트입니다.</p>
+    <p>관리자가 소모아 플랫폼에 연결할 다양한 IoT 기기들을 손쉽게 테스트하고 시뮬레이션할 수 있게 해줍니다.</p>
+</div>
+<br/>
 
-## Getting Started
+# 기술 스택
 
-First, run the development server:
+-   Frontend
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+    |                           Next.js                            |                           Tailwind CSS                            |                         Zustand                         |
+    | :----------------------------------------------------------: | :---------------------------------------------------------------: | :-----------------------------------------------------: |
+    | <img src="./docs-images/icon/NextJS-Light.svg" height="100"> | <img src="./docs-images/icon/TailwindCSS-Light.svg" height="100"> | <img src="./docs-images/icon/Zustand.png" height="100"> |
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   Backend
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    |                           Next.js                            |                         NextAuth                         |                         MongoDB                         |                         ts-jest                         |
+    | :----------------------------------------------------------: | :------------------------------------------------------: | :-----------------------------------------------------: | :-----------------------------------------------------: |
+    | <img src="./docs-images/icon/NextJS-Light.svg" height="100"> | <img src="./docs-images/icon/NextAuth.png" height="100"> | <img src="./docs-images/icon/MongoDB.png" height="100"> | <img src="./docs-images/icon/TS-Jest.png" height="100"> |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+# 기능
 
-## Learn More
+-   **제조사 생성**: 사용자는 다양한 IoT 기기 제조사를 생성할 수 있습니다.
+-   **모델 생성**: 특정 제조사의 기기 모델을 생성할 수 있습니다.
+-   **기기 생성**: 실제 기기와 같은 가상의 기기를 생성할 수 있습니다.
+-   **기기 동작**: 생성한 가상 기기를 실제와 같이 동작시킬 수 있습니다.
 
-To learn more about Next.js, take a look at the following resources:
+# 화면설계
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<img src="./docs-images/figma.png"/>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# 화면
 
-## Deploy on Vercel
+### 로그인
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<img src="./docs-images/capture/화면1.PNG" height="500"/>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 기기 모델 생성
+
+<img src="./docs-images/capture/화면2.PNG" height="500"/>
+
+### 기기 생성
+
+<img src="./docs-images/capture/화면3.PNG" height="500"/>
+
+### 기기 동작
+
+<img src="./docs-images/capture/화면4.PNG" height="500"/>
+
+# ERD
+
+<img src="./docs-images/erd.png"/>
+
+# API
+
+## 기기
+
+| 권한  | Method                                                                          | URI                                                               | 설명           | 우선순위                                                                        |
+| ----- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------- |
+| Admin | <img src="https://img.shields.io/badge/POST-7acaff?style=flat&logoColor=white"> | /api/device                                                       | 기기 생성      | <img src="https://img.shields.io/badge/High-ff281c?style=flat&logoColor=white"> |
+| Admin | <img src="https://img.shields.io/badge/GET-ffd769?style=flat&logoColor=white">  | /api/device?manufacturer={manufacturer}&device_type={device_type} | 기기 모델 조회 | <img src="https://img.shields.io/badge/High-ff281c?style=flat&logoColor=white"> |
+| All   | <img src="https://img.shields.io/badge/GET-ffd769?style=flat&logoColor=white">  | /api/device?device_id={device_id}                                 | 기기 단일 조회 | <img src="https://img.shields.io/badge/High-ff281c?style=flat&logoColor=white"> |
+
+## 기기 모델
+
+| 권한  | Method                                                                            | URI                               | 설명           | 우선순위                                                                        |
+| ----- | --------------------------------------------------------------------------------- | --------------------------------- | -------------- | ------------------------------------------------------------------------------- |
+| Admin | <img src="https://img.shields.io/badge/DELETE-ff8ff8?style=flat&logoColor=white"> | /api/device?device_id={device_id} | 기기 삭제      | <img src="https://img.shields.io/badge/Low-f4ff59?style=flat&logoColor=white">  |
+| Admin | <img src="https://img.shields.io/badge/POST-7acaff?style=flat&logoColor=white">   | /api/device-model                 | 기기 모델 생성 | <img src="https://img.shields.io/badge/High-ff281c?style=flat&logoColor=white"> |
+| Admin | <img src="https://img.shields.io/badge/DELETE-ff8ff8?style=flat&logoColor=white"> | /api/device-model?model={model}   | 기기 모델 삭제 | <img src="https://img.shields.io/badge/Low-f4ff59?style=flat&logoColor=white">  |
+
+## 제조사
+
+| 권한  | Method                                                                            | URI                                           | 설명             | 우선순위                                                                          |
+| ----- | --------------------------------------------------------------------------------- | --------------------------------------------- | ---------------- | --------------------------------------------------------------------------------- |
+| Admin | <img src="https://img.shields.io/badge/POST-7acaff?style=flat&logoColor=white">   | /api/manufacturer                             | 제조사 생성      | <img src="https://img.shields.io/badge/Middle-00ba3e?style=flat&logoColor=white"> |
+| Admin | <img src="https://img.shields.io/badge/GET-ffd769?style=flat&logoColor=white">    | /api/manufacturer                             | 제조사 목록 조회 | <img src="https://img.shields.io/badge/High-ff281c?style=flat&logoColor=white">   |
+| Admin | <img src="https://img.shields.io/badge/DELETE-ff8ff8?style=flat&logoColor=white"> | /api/manufacturer?manufacturer={manufacturer} | 제조사 삭제      | <img src="https://img.shields.io/badge/Low-f4ff59?style=flat&logoColor=white">    |
+
+# API 테스트
+
+<img src="./docs-images/api-test.png"/>
